@@ -1,5 +1,4 @@
-EnlightenedObservers
-====================
+h1. EnlightenedObservers
 
 This plugin makes it quick and easy to share the controller information with observers, including session information.  This is useful when observers need to report the current_user that made a certain action happen.
 
@@ -7,21 +6,22 @@ The code and idea for this plugin comes from:
 http://scie.nti.st/2007/2/1/let-activerecord-observers-see-controller-context
 
 
-Usage
-=======
+h2. Usage
+
+<code>
 class MyController < ActionController::Base
   include EnlightenedObservers
 
   observer :my_observer
 end
-
+</code>
 
 Now my_observer has access to a controller instance variable, which can be used to access the session.
 e.g. 
 
 
-Installation 
-=======
+h2. Installation 
+
 
 
 
