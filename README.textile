@@ -30,7 +30,15 @@ Rails::Initializer.run do |config|
 end
 </pre>
 
-To unpack it into your application, just run:
+And of course, run 
+
+<pre>
+  rake gems:install
+</pre>
+
+To get them installed on your system.
+
+Optionally, to unpack it into your application, just run:
 
 <pre>
   rake gems:unpack GEM=moorage-enlightened_observers
