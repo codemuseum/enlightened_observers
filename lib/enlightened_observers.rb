@@ -5,8 +5,6 @@ module EnlightenedObservers
 
   module ClassMethods
     def observer(*observers)
-      super
-
       configuration = observers.last.is_a?(Hash) ? observers.pop : {}
       observers.each do |observer|
         observer_instance = Object.const_get(Inflector.classify(observer)).instance

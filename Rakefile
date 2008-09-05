@@ -7,7 +7,7 @@ require 'date'
  
 GEM = "enlightened_observers"
 HUMANIZED_GEM = "EnlightenedObservers"
-GEM_VERSION = "1.0.20080915"
+GEM_VERSION = "1.1"
 AUTHOR = "ThriveSmart, LLC"
 EMAIL = "developers@thrivesmart.com"
 HOMEPAGE = "http://www.github.com/moorage/enlightened_observers"
