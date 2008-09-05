@@ -3,18 +3,18 @@ h1. EnlightenedObservers
 This plugin makes it quick and easy to share the controller information with observers, including session information.  This is useful when observers need to report the current_user that made a certain action happen.
 
 The code and idea for this plugin comes from:
-http://scie.nti.st/2007/2/1/let-activerecord-observers-see-controller-context
+"Garry Dolley's Let ActiveRecord Observers see controller context":http://scie.nti.st/2007/2/1/let-activerecord-observers-see-controller-context
 
 
 h2. Usage
 
-<code>
+<pre>
 class MyController < ActionController::Base
   include EnlightenedObservers
 
   observer :my_observer
 end
-</code>
+</pre>
 
 Now my_observer has access to a controller instance variable, which can be used to access the session.
 e.g. 
@@ -22,7 +22,19 @@ e.g.
 
 h2. Installation 
 
+To enable the library your Rails 2.1 (or greater) project, use the gem configuration method in "<code>config/environment.rb</code>"
 
+<pre>
+Rails::Initializer.run do |config|
+  config.gem 'moorage-enlightened_observers', :source => 'http://gems.github.com'
+end
+</pre>
+
+To unpack it into your application, just run:
+
+<pre>
+  rake gems:unpack GEM=moorage-enlightened_observers
+</pre>
 
 
 =======
