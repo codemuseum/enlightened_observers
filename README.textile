@@ -26,9 +26,11 @@ To enable the library your Rails 2.1 (or greater) project, use the gem configura
 
 <pre>
 Rails::Initializer.run do |config|
-  config.gem 'moorage-enlightened_observers', :source => 'http://gems.github.com'
+  config.gem 'moorage-enlightened_observers', :lib => 'enlightened_observers', :source => 'http://gems.github.com'
 end
 </pre>
+
+The <code>:lib</code> is important, because rails gets confused when the name of the gem is different from the library.
 
 And of course, run 
 
