@@ -4,15 +4,15 @@ module EnlightenedObservers
   end
 
   module ClassMethods
-    def observer(*observers)
+    def enlighten_observer(*observers)
       configuration = observers.last.is_a?(Hash) ? observers.pop : {}
       observers.each do |observer|
-        observer_instance = Object.const_get(Inflector.classify(observer)).instance
-        class <<observer_instance
-          include Enlightenment
+        observer_instance = observer.to_s.camelize.constantize.instance
+        around_filter do |controller, action|
+          observer_instance.controller = controller
+          action.call
+          observer_instance.controller = controller # Other controllers can call this too!
         end
-
-        around_filter(observer_instance, :only => configuration[:only])
       end
     end
   end
@@ -22,14 +22,6 @@ module EnlightenedObservers
       base.module_eval do
         attr_accessor :controller
       end
-    end
-
-    def before(controller)
-      self.controller = controller
-    end
-
-    def after(controller)
-      self.controller = nil # Clean up for GC
     end
   end
 end

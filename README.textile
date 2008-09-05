@@ -2,27 +2,35 @@ h1. EnlightenedObservers
 
 This plugin makes it quick and easy to share the controller information with observers, including session information.  This is useful when observers need to report the current_user that made a certain action happen.
 
-The code and idea for this plugin comes from:
+A sizable amount of the code and idea for this plugin comes from:
 "Garry Dolley's Let ActiveRecord Observers see controller context":http://scie.nti.st/2007/2/1/let-activerecord-observers-see-controller-context
 
-h2. Important Note
-
-This plugin makes the observers that they're used with non-functional when the models they observe are updated in any way other than through controllers (e.g. script/console).  
-
-We're currently investigating how to get around this.
 
 h2. Usage
 
 <pre>
 class MyController < ActionController::Base
-  include EnlightenedObservers
-
-  observer :my_observer
+  enlighten_observer :my_observer<i>[, :my_second_observer]</i>
 end
 </pre>
 
-Now my_observer has access to a controller instance variable, which can be used to access the session.
-e.g. 
+In your observers, also <code>include EnlightenedObservers::Enlightenment</code>:
+
+<pre>
+class MyObserver < ActiveRecord::Observer
+  include EnlightenedObservers::Enlightenment
+  
+<i>  def after_create(my)
+    ...
+  end</i>
+end
+</pre>
+
+Of course, you still have to initialize any observer the normal way in <code>config/environment.rb</code>
+
+<pre>
+  config.active_record.observers = :my_observer<i>[, :my_second_observer]</i>
+</pre>
 
 
 h2. Installation 
@@ -50,6 +58,15 @@ Optionally, to unpack it into your application, just run:
 <pre>
   rake gems:unpack GEM=moorage-enlightened_observers
 </pre>
+
+
+h2. How it Works
+
+By adding <code>include EnlightenedObservers::Enlightenment</code> to your Observer, an <code>attr_accessor</code> for <code>controllers</code> is added, which you can access any time from your Observer.  Depending on how your oberserver has been called, this variable might have been set, with the controller that was used to access and change the model this observer has been observing.
+
+By calling <code>enlighten_observer :my_observer<i>[, :my_second_observer]</i></code> in your controllers, you're adding an around_filter to the controller that sets and unsets the observers' controller accessor.  Each time a controller action is called, this around filter finds the currently running instance of the observer (using code copied from module <code>ActiveModel::Observing::ClassMethods</code>).
+
+NOTE: we could have had the <code>enlighten_observer</code> call actually do the <code>include EnlightenedObservers::Enlightenment</code> in the Observer - however, since your observer can be run even if the model was changed through something OTHER than a controller action, we chose to decouple the two calls.
 
 
 =======
