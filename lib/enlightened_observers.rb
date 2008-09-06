@@ -9,11 +9,9 @@ module EnlightenedObservers
       observers.each do |observer|
         observer_instance = observer.to_s.camelize.constantize.instance
         around_filter do |controller, action|
-          calculated_values = { :controller => self }
-          enlighten_data_spec.each_pair { |k,v| calculated_values[k] = self.send(v.to_sym) }
-          observer_instance.enlightenment = calculated_values
+          observer_instance.controller = controller
           action.call
-          observer_instance.enlightenment = nil # Other controllers can call this too!
+          observer_instance.controller = nil # Other controllers can call this too!
         end
       end
     end
@@ -22,7 +20,7 @@ module EnlightenedObservers
   module Enlightenment
     def self.included(base)
       base.module_eval do
-        attr_accessor :enlightenment
+        attr_accessor :controller
       end
     end
   end

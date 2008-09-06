@@ -11,7 +11,7 @@ h2. Usage
 <pre>
 class MyController < ActionController::Base
   include EnlightenedObservers
-  enlighten_observer :my_observer, :second_observer, ..., { :data_hash_key => :controller_method_to_call, ...}
+  enlighten_observer :my_observer
   ...
 end
 </pre>
@@ -31,9 +31,9 @@ Of course, you still have to initialize any observer the normal way in <code>con
   config.active_record.observers = :my_observer
 </pre>
 
-Now, in your observers, you can access data saved by calling <code>enlightenment[:controller]</code> - but be sure to check if <code>enlightenment.nil?</code>
+Now, in your observers, you can access data saved by calling <code>controller</code> - but be sure to check if <code>controller.nil?</code>
 
-To get data stored that you specified in the hash at the end of the <code>enlighten_observer</code> declaration, simply access it as a hash: <code>enlightenment[:data_hash_key]</code>, and that will yield the computed value of <code>self.send(:controller_method_to_call)</code> where <code>self</code> is the controller instance.
+To get data stored that you specified in the hash at the end of the <code>enlighten_observer</code> declaration, simply access it as a hash: <code>controller</code>, and that will yield the computed value of <code>self.send(:controller_method_to_call)</code> where <code>self</code> is the controller instance.
 
 
 h2. Installation 
@@ -68,7 +68,7 @@ A controller:
 <pre>
   class OrganizationsController < ApplicationController
     include EnlightenedObservers
-    enlighten_observer :alert_event_observer, { :logged_in => :logged_in?, :current_user => :current_user }
+    enlighten_observer :alert_event_observer
     before_filter :authorization_required, :only => [:edit, :update, :destroy]
   
     def edit
@@ -86,27 +86,20 @@ An observer:
 
     def after_update(alertable)
       f = Alert.new
-      f.actor = find_actor
+      unless controller.nil?
+        ... # do somehting
+      end
       f.title = "created #{alertable.name}"
       f.save
     end
-
-    protected
-
-      def find_actor
-        unless enlightenment.nil? || !enlightenment[:logged_in?]
-          return enlightenment[:current_user]  
-        end
-        nil
-      end
   end
 </pre>
 
 h2. How it Works
 
-By adding <code>include EnlightenedObservers::Enlightenment</code> to your Observer, an <code>attr_accessor</code> for <code>enlightenment</code> is added, which you can access any time from your Observer.  Depending on how your oberserver has been called, this variable might have been set, with the controller that was used to access and change the model this observer has been observing.
+By adding <code>include EnlightenedObservers::Enlightenment</code> to your Observer, an <code>attr_accessor</code> for <code>controller</code> is added, which you can access any time from your Observer.  Depending on how your oberserver has been called, this variable might have been set, with the controller that was used to access and change the model this observer has been observing.
 
-By calling <code>enlighten_observer :my_observer</code> in your controller, you're adding an around_filter to the controller that sets and unsets the observers' enlightenment accessor.  Each time a controller action is called, this around filter finds the currently running instance of the observer (using code copied from module <code>ActiveModel::Observing::ClassMethods</code>).  The controller then saves the values from the controller into the enlightment hash, e.g. <code>enlightenment[:controller]</code>
+By calling <code>enlighten_observer :my_observer</code> in your controller, you're adding an around_filter to the controller that sets and unsets the observers' <code>controller</code> accessor.  Each time a controller action is called, this around filter finds the currently running instance of the observer (using code copied from module <code>ActiveModel::Observing::ClassMethods</code>). 
 
 NOTE: we could have had the <code>enlighten_observer</code> call actually do the <code>include EnlightenedObservers::Enlightenment</code> in the Observer - however, since your observer can be run even if the model was changed through something OTHER than a controller action, we chose to decouple the two calls.
 
