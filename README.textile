@@ -10,7 +10,8 @@ h2. Usage
 
 <pre>
 class MyController < ActionController::Base
-  enlighten_observer :my_observer<i>[, :my_second_observer]</i>
+  include EnlightenedObservers
+  enlighten_observer :my_observer<em>[, :my_second_observer]</em>
 end
 </pre>
 
@@ -20,16 +21,16 @@ In your observers, also <code>include EnlightenedObservers::Enlightenment</code>
 class MyObserver < ActiveRecord::Observer
   include EnlightenedObservers::Enlightenment
   
-<i>  def after_create(my)
+<em>  def after_create(my)
     ...
-  end</i>
+  end</em>
 end
 </pre>
 
 Of course, you still have to initialize any observer the normal way in <code>config/environment.rb</code>
 
 <pre>
-  config.active_record.observers = :my_observer<i>[, :my_second_observer]</i>
+  config.active_record.observers = :my_observer<em>[, :my_second_observer]</em>
 </pre>
 
 
@@ -64,7 +65,7 @@ h2. How it Works
 
 By adding <code>include EnlightenedObservers::Enlightenment</code> to your Observer, an <code>attr_accessor</code> for <code>controllers</code> is added, which you can access any time from your Observer.  Depending on how your oberserver has been called, this variable might have been set, with the controller that was used to access and change the model this observer has been observing.
 
-By calling <code>enlighten_observer :my_observer<i>[, :my_second_observer]</i></code> in your controllers, you're adding an around_filter to the controller that sets and unsets the observers' controller accessor.  Each time a controller action is called, this around filter finds the currently running instance of the observer (using code copied from module <code>ActiveModel::Observing::ClassMethods</code>).
+By calling <code>enlighten_observer :my_observer<em>[, :my_second_observer]</em></code> in your controllers, you're adding an around_filter to the controller that sets and unsets the observers' controller accessor.  Each time a controller action is called, this around filter finds the currently running instance of the observer (using code copied from module <code>ActiveModel::Observing::ClassMethods</code>).
 
 NOTE: we could have had the <code>enlighten_observer</code> call actually do the <code>include EnlightenedObservers::Enlightenment</code> in the Observer - however, since your observer can be run even if the model was changed through something OTHER than a controller action, we chose to decouple the two calls.
 
